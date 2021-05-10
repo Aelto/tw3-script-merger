@@ -1,0 +1,2 @@
+rmdir output /s /q
+cargo run -- --source "D:\programs\steam\steamapps\common\The Witcher 3\content\content0\scripts" --input "D:\programs\steam\steamapps\common\The Witcher 3\modlists\modded-vanilla\mods" --output output\content\scripts --texteditor code --clean
