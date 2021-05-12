@@ -15,7 +15,11 @@ fn main() -> Result<(), Box<dyn Error>> {
   let output_path = PathBuf::from_str(&args.output).expect("could not parse the output path");
 
   if args.clean {
-    fs::remove_dir_all(&output_path)?;
+    if let Err(error) = fs::remove_dir_all(&output_path) {
+      if !args.json {
+        println!("{}", error);
+      }
+    }
   }
 
   let mods = fs::read_dir(input_path)?;

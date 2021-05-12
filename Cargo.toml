@@ -1,5 +1,5 @@
 [package]
-name = "diff-test-rust"
+name = "tw3-script-merger"
 version = "0.1.0"
 authors = ["Aelto <Aelto@users.noreply.github.com>"]
 edition = "2018"
@@ -18,3 +18,4 @@ terminal_size = "0.1.16"
 clap = "2.33.3"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
+notify = "4.0.16"

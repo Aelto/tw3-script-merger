@@ -1,7 +1,7 @@
-use difference::{Changeset};
 use std::{cmp, path::PathBuf};
 use serde::{Deserialize, Serialize};
-use serde_json::Result;
+use notify::{Watcher, RecursiveMode, RawEvent, raw_watcher};
+use std::sync::mpsc::channel;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Conflict {
@@ -79,4 +79,21 @@ pub fn print_json_conflict(input: &str, filepath: &PathBuf) {
   }
 
   println!("{}", serde_json::to_string(&message).unwrap());
+
+  // now we watch for changes on the file
+  let (tx, rx) = channel();
+
+  // Create a watcher object, delivering raw events.
+  // The notification back-end is selected based on the platform.
+  let mut watcher = raw_watcher(tx).unwrap();
+
+  // Add a path to be watched. All files and directories at that path and
+  // below will be monitored for changes.
+  watcher.watch(&filepath, RecursiveMode::NonRecursive).unwrap();
+
+  match rx.recv() {
+    // we don't care about what happens, we just wait until the file is
+    // changed.
+    _ => {}
+  }
 }
