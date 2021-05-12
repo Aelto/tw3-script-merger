@@ -7,7 +7,8 @@ pub struct Args {
 
   pub text_editor: Option<String>,
   
-  pub clean: bool
+  pub clean: bool,
+  pub json: bool
 }
 
 pub fn get_args_match() -> Args {
@@ -44,8 +45,11 @@ pub fn get_args_match() -> Args {
         .long("texteditor")
         .value_name("PATH")
         .takes_value(true)
-        .default_value("code.cmd")
-        .help("path a text editor that will be used to resolve the conflicts")
+        .help("path to the text editor that will be used to resolve the conflicts. Passing this parameter disable the JSON output")
+    )
+    .arg(Arg::with_name("json")
+        .long("json")
+        .help("tells to output the merge conflicts in stdout in the JSON format, then watches the conflicting file until the conflicts are resolved")
     )
     .arg(Arg::with_name("clean")
         .short("c")
@@ -60,6 +64,7 @@ pub fn get_args_match() -> Args {
       output: matches.value_of("output").expect("could not get output path").to_string(),
 
       text_editor: matches.value_of("texteditor").map(|s| s.to_string()),
-      clean: matches.value_of("clean").map(|_| true).unwrap_or(false)
+      clean: matches.occurrences_of("clean") > 0,
+      json: matches.occurrences_of("json") > 0
     }
 }

@@ -16,3 +16,5 @@ term = "0.7.0"
 term_grid = "0.2.0"
 terminal_size = "0.1.16"
 clap = "2.33.3"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
