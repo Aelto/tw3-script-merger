@@ -11,17 +11,31 @@ struct Conflict {
 
   // some of the code before and after the conflict
   context_before: String,
-  context_after: String
+  context_after: String,
+  context_original_size: usize
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Message {
   conflicts: Vec<Conflict>,
   file_name: String,
-  file_path: String
+  file_path: String,
+
+  mod_name: String
 }
 
-pub fn print_json_conflict(input: &str, filepath: &PathBuf) {
+pub fn print_empty_json_conflict() {
+  let message = Message {
+    conflicts: Vec::new(),
+    file_name: String::new(),
+    file_path: String::new(),
+    mod_name: String::new()
+  };
+
+  println!("{}", serde_json::to_string(&message).unwrap());
+}
+
+pub fn print_json_conflict(input: &str, filepath: &PathBuf, modname: &str) {
   let conflict_start = "<<<<<<< ours";
   let conflict_end = ">>>>>>> theirs";
   let original_start = "||||||| original";
@@ -37,7 +51,8 @@ pub fn print_json_conflict(input: &str, filepath: &PathBuf) {
   let mut message = Message {
     conflicts: Vec::new(),
     file_name: String::from(filename),
-    file_path: String::from(filepath.to_str().unwrap_or(filename))
+    file_path: String::from(filepath.to_str().unwrap_or(filename)),
+    mod_name: String::from(modname)
   };
 
   let mut slice = &input[..];
@@ -72,11 +87,15 @@ pub fn print_json_conflict(input: &str, filepath: &PathBuf) {
       theirs: String::from(&slice[original_end_index + original_end_length .. end_index]),
 
       context_before: String::from(&slice[left..start_index]),
-      context_after: String::from(&slice[end_index + conflict_end.len() ..right])
+      context_after: String::from(&slice[end_index + conflict_end.len() ..right]),
+      context_original_size: context_size
     });
 
     slice = &slice[end_index + conflict_end.len()..];
   }
+
+  std::fs::write(filepath, input)
+  .expect("could not write to the file");
 
   println!("{}", serde_json::to_string(&message).unwrap());
 

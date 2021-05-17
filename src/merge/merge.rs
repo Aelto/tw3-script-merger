@@ -22,6 +22,8 @@ pub fn merge_mod(origin: &PathBuf, output: &PathBuf, modfolder: &PathBuf) -> Res
     .join("content")
     .join("scripts");
 
+  let modname = modfolder.file_name().unwrap().to_str().unwrap();
+
   if !content_folder.is_dir() {
     return Ok(());
   }
@@ -50,13 +52,13 @@ pub fn merge_mod(origin: &PathBuf, output: &PathBuf, modfolder: &PathBuf) -> Res
     }
     
     let origin_file_path = origin.join(relative_path);
-    try_merge(&origin_file_path, &output_file_path, &PathBuf::from(file.path()))?;
+    try_merge(&origin_file_path, &output_file_path, &PathBuf::from(file.path()), modname)?;
   }
 
   Ok(())
 }
 
-fn try_merge(origin_file_path: &PathBuf, output_file_path: &PathBuf, mod_path: &PathBuf) -> Result<(),Box<dyn Error>> {
+fn try_merge(origin_file_path: &PathBuf, output_file_path: &PathBuf, mod_path: &PathBuf, modname: &str) -> Result<(),Box<dyn Error>> {
   let origin_content = get_string_from_file(&origin_file_path)?;
   let output_content = get_string_from_file(&output_file_path)?;
   let modded_content = get_string_from_file(&mod_path)?;
@@ -77,7 +79,7 @@ fn try_merge(origin_file_path: &PathBuf, output_file_path: &PathBuf, mod_path: &
         },
 
         // not all conflicts were resolved
-        Err(content) => show_conflicts_to_user(&output_file_path, &content)?
+        Err(content) => show_conflicts_to_user(&output_file_path, &content, &modname)?
       }
     },
   };
@@ -85,7 +87,7 @@ fn try_merge(origin_file_path: &PathBuf, output_file_path: &PathBuf, mod_path: &
   Ok(())
 }
 
-fn show_conflicts_to_user(output_file_path: &PathBuf, content: &str) -> Result<(),Box<dyn Error>> {
+fn show_conflicts_to_user(output_file_path: &PathBuf, content: &str, modname: &str) -> Result<(),Box<dyn Error>> {
   let args = cli::args::get_args_match();
 
   if let Some(text_editor_path) = args.text_editor {
@@ -94,7 +96,7 @@ fn show_conflicts_to_user(output_file_path: &PathBuf, content: &str) -> Result<(
     open_conflict_with_text_editor(&output_file_path, &text_editor_path);
   }
   else if args.json {
-    print_json_conflict(&content, &output_file_path);
+    print_json_conflict(&content, &output_file_path, modname);
   }
   else {
     let content = prompt_conflicts_in_file(&content);
