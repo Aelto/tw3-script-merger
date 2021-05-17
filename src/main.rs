@@ -36,6 +36,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
   }
 
+  // when the option is enabled and it send JSON message for each conflict
+  // we also send an empty message at the end to notifiy the merge is done.
+  if args.json {
+    conflict::print_empty_json_conflict();
+  }
+
   Ok(())
 }
 
