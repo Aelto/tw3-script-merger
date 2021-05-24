@@ -4,7 +4,7 @@ use encoding_rs_io::DecodeReaderBytes;
 use std::io::Read;
 use walkdir::WalkDir;
 use std::process::Command;
-use std::path::{PathBuf};
+use std::path::Path;
 use std::error::Error;
 
 use crate::conflict::{prompt_conflicts_in_file, print_json_conflict};
@@ -17,7 +17,7 @@ use crate::cli;
 ///  - C is the mod
 /// If the files from C don't exist in B then it will straight up copy the files
 /// without merging them.
-pub fn merge_mod(origin: &PathBuf, output: &PathBuf, modfolder: &PathBuf) -> Result<(), Box<dyn Error>> {
+pub fn merge_mod(origin: &Path, output: &Path, modfolder: &Path) -> Result<(), Box<dyn Error>> {
   let content_folder = modfolder
     .join("content")
     .join("scripts");
@@ -52,13 +52,13 @@ pub fn merge_mod(origin: &PathBuf, output: &PathBuf, modfolder: &PathBuf) -> Res
     }
     
     let origin_file_path = origin.join(relative_path);
-    try_merge(&origin_file_path, &output_file_path, &PathBuf::from(file.path()), modname)?;
+    try_merge(&origin_file_path, &output_file_path, &file.path(), modname)?;
   }
 
   Ok(())
 }
 
-fn try_merge(origin_file_path: &PathBuf, output_file_path: &PathBuf, mod_path: &PathBuf, modname: &str) -> Result<(),Box<dyn Error>> {
+fn try_merge(origin_file_path: &Path, output_file_path: &Path, mod_path: &Path, modname: &str) -> Result<(),Box<dyn Error>> {
   let origin_content = get_string_from_file(&origin_file_path)?;
   let output_content = get_string_from_file(&output_file_path)?;
   let modded_content = get_string_from_file(&mod_path)?;
@@ -87,7 +87,7 @@ fn try_merge(origin_file_path: &PathBuf, output_file_path: &PathBuf, mod_path: &
   Ok(())
 }
 
-fn show_conflicts_to_user(output_file_path: &PathBuf, content: &str, modname: &str) -> Result<(),Box<dyn Error>> {
+fn show_conflicts_to_user(output_file_path: &Path, content: &str, modname: &str) -> Result<(),Box<dyn Error>> {
   let args = cli::args::get_args_match();
 
   if let Some(text_editor_path) = args.text_editor {
@@ -107,7 +107,7 @@ fn show_conflicts_to_user(output_file_path: &PathBuf, content: &str, modname: &s
   Ok(())
 }
 
-fn open_conflict_with_text_editor(file_path: &PathBuf, text_editor: &str) {
+fn open_conflict_with_text_editor(file_path: &Path, text_editor: &str) {
   if cfg!(target_os = "windows") {
     Command::new("cmd")
     .args(&["/c", text_editor, "--wait", &file_path.to_str().unwrap()])
@@ -121,7 +121,7 @@ fn open_conflict_with_text_editor(file_path: &PathBuf, text_editor: &str) {
   };
 }
 
-fn get_string_from_file(path: &PathBuf) -> Result<String, Box<dyn Error>> {
+fn get_string_from_file(path: &Path) -> Result<String, Box<dyn Error>> {
   let source_data = fs::read(path)?;
   // N.B. `source_data` can be any arbitrary io::Read implementation.
   let mut decoder = DecodeReaderBytes::new(&source_data[..]);

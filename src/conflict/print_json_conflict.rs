@@ -1,6 +1,6 @@
-use std::{cmp, path::PathBuf};
+use std::{cmp, path::Path};
 use serde::{Deserialize, Serialize};
-use notify::{Watcher, RecursiveMode, RawEvent, raw_watcher};
+use notify::{Watcher, RecursiveMode, raw_watcher};
 use std::sync::mpsc::channel;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -35,7 +35,7 @@ pub fn print_empty_json_conflict() {
   println!("{}", serde_json::to_string(&message).unwrap());
 }
 
-pub fn print_json_conflict(input: &str, filepath: &PathBuf, modname: &str) {
+pub fn print_json_conflict(input: &str, filepath: &Path, modname: &str) {
   let conflict_start = "<<<<<<< ours";
   let conflict_end = ">>>>>>> theirs";
   let original_start = "||||||| original";
