@@ -55,7 +55,7 @@ pub fn print_json_conflict(input: &str, filepath: &Path, modname: &str) {
     mod_name: String::from(modname)
   };
 
-  let mut slice = &input[..];
+  let mut slice = input;
 
   loop {
     let start_index = slice.find(conflict_start);
@@ -110,9 +110,8 @@ pub fn print_json_conflict(input: &str, filepath: &Path, modname: &str) {
   // below will be monitored for changes.
   watcher.watch(&filepath, RecursiveMode::NonRecursive).unwrap();
 
-  match rx.recv() {
+  if let Err(_error) = rx.recv() {
     // we don't care about what happens, we just wait until the file is
     // changed.
-    _ => {}
   }
 }

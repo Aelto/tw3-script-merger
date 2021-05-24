@@ -24,16 +24,16 @@ fn main() -> Result<(), Box<dyn Error>> {
 
   let mods = fs::read_dir(input_path)?;
 
-  for mod_result in mods {
-    if let Ok(mod_name) = mod_result {
-      let mod_path = mod_name.path();
+  for mod_result in mods.flatten() {
+    // if let Ok(mod_name) = mod_result {
+      let mod_path = mod_result.path();
 
-      if !mod_path.file_name().unwrap_or(OsStr::new("")).to_str().unwrap_or("").starts_with("mod") {
+      if !mod_path.file_name().unwrap_or_else(|| OsStr::new("")).to_str().unwrap_or("").starts_with("mod") {
         continue;
       }
 
-      merge::merge::merge_mod(&origin_path, &output_path, &mod_path)?;
-    }
+      merge::merge_mod(&origin_path, &output_path, &mod_path)?;
+    // }
   }
 
   // when the option is enabled and it send JSON message for each conflict

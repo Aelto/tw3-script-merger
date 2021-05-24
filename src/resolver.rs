@@ -72,14 +72,14 @@ pub fn resolve_conflicts_in_file(input: &str) -> Result<String, String> {
 fn resolve_conflict(conflict: Conflict) -> Result<&str, ()> {
 
   // empty ours and original
-  if conflict.ours.replace("\n", "").trim().len() == 0
-  && conflict.original.replace("\n", "").trim().len() == 0 {
+  if conflict.ours.replace("\n", "").trim().is_empty()
+  && conflict.original.replace("\n", "").trim().is_empty() {
     return Ok(conflict.theirs);
   }
 
   // empty theirs and original
-  if conflict.theirs.replace("\n", "").trim().len() == 0
-  && conflict.original.replace("\n", "").trim().len() == 0 {
+  if conflict.theirs.replace("\n", "").trim().is_empty()
+  && conflict.original.replace("\n", "").trim().is_empty() {
     return Ok(conflict.ours);
   }
 
