@@ -8,7 +8,8 @@ pub struct Args {
   pub text_editor: Option<String>,
   
   pub clean: bool,
-  pub json: bool
+  pub json: bool,
+  pub ignored: Vec<String>
 }
 
 pub fn get_args_match() -> Args {
@@ -58,9 +59,10 @@ pub fn get_args_match() -> Args {
     )
     .arg(Arg::with_name("exclude")
         .multiple(true)
+        .takes_value(true)
         .long("exclude")
         .short("e")
-        .help("exclude a file from one specific mod, or a mod and all of its files entirely, from being merged. To exclude a mod entirely use: `--exclude modname` and to exclude a specific file use `--exclude modname:path/to/file.ws` where the path is a relative path starting from the mod's /scripts/content/ folder.")
+        .help("exclude a file from one specific mod, or a mod and all of its files entirely, from being merged. To exclude a mod entirely use: `--exclude modname` and to exclude a specific file use `--exclude modname/path/to/file.ws`.")
     )
     .subcommand(SubCommand::with_name("tree")
         .about("returns a tree of the conflicts in a json format. The tree lists of files that need merges and for each file, the mods that edit it.")
@@ -98,6 +100,7 @@ pub fn get_args_match() -> Args {
 
       text_editor: matches.value_of("texteditor").map(|s| s.to_string()),
       clean: matches.occurrences_of("clean") > 0,
-      json: matches.occurrences_of("json") > 0
+      json: matches.occurrences_of("json") > 0,
+      ignored: matches.values_of("exclude").unwrap_or_default().map(|s| s.to_string()).collect()
     }
 }

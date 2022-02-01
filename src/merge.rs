@@ -64,12 +64,14 @@ fn try_merge(origin_file_path: &Path, output_file_path: &Path, mod_path: &Path, 
   let modded_content = get_string_from_file(&mod_path)?;
 
 
-  let result = merge(&origin_content, &modded_content, &output_content);
+  let result = merge(&origin_content, &output_content, &modded_content);
+  println!("merge {} and {}", &modname, &output_file_path.file_name().unwrap().to_str().unwrap());
   match result {
     Ok(v) => {
       fs::write(&output_file_path, v)?;
     },
     Err(v) => {
+      println!("conflict between {} and {}", &modname, &output_file_path.file_name().unwrap().to_str().unwrap());
 
       match resolver::resolve_conflicts_in_file(&v) {
 

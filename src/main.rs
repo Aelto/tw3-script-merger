@@ -22,11 +22,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
   }
 
+  fs::create_dir_all(&output_path)?;
+
   let mods = fs::read_dir(input_path)?;
 
   for mod_result in mods.flatten() {
     // if let Ok(mod_name) = mod_result {
       let mod_path = mod_result.path();
+
+      let mod_name = mod_path.file_name().unwrap().to_str().unwrap();
+      let is_ignored = args.ignored.iter().any(|name| mod_name == name);
+      if is_ignored {
+        println!("{:?} ignored", mod_name);
+
+        continue;
+      }
 
       if !mod_path.file_name().unwrap_or_else(|| OsStr::new("")).to_str().unwrap_or("").starts_with("mod") {
         continue;
