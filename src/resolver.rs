@@ -1,8 +1,7 @@
-
 struct Conflict<'a> {
   original: &'a str,
   ours: &'a str,
-  theirs: &'a str
+  theirs: &'a str,
 }
 
 /// this function takes the string content of a file with merge conflicts (git
@@ -19,7 +18,7 @@ pub fn resolve_conflicts_in_file(input: &str) -> Result<String, String> {
   let original_end = "=======";
   let original_start_length = original_start.len();
   let original_end_length = original_end.len();
-  
+
   let mut has_resolved_everything = true;
   let mut output: Vec<String> = Vec::new();
 
@@ -41,8 +40,8 @@ pub fn resolve_conflicts_in_file(input: &str) -> Result<String, String> {
 
     let conflict = Conflict {
       ours: &chunk[0..original_start_index],
-      original: &chunk[original_start_index+original_start_length..original_end_index],
-      theirs: &chunk[original_end_index+original_end_length..]
+      original: &chunk[original_start_index + original_start_length..original_end_index],
+      theirs: &chunk[original_end_index + original_end_length..],
     };
     match resolve_conflict(conflict) {
       Ok(resolved_chunk) => {
@@ -60,26 +59,26 @@ pub fn resolve_conflicts_in_file(input: &str) -> Result<String, String> {
       }
     }
   }
-  
+
   if has_resolved_everything {
     Ok(output.join(""))
-  }
-  else {
+  } else {
     Err(output.join(""))
   }
 }
 
 fn resolve_conflict(conflict: Conflict) -> Result<&str, ()> {
-
   // empty ours and original
   if conflict.ours.replace("\n", "").trim().is_empty()
-  && conflict.original.replace("\n", "").trim().is_empty() {
+    && conflict.original.replace("\n", "").trim().is_empty()
+  {
     return Ok(conflict.theirs);
   }
 
   // empty theirs and original
   if conflict.theirs.replace("\n", "").trim().is_empty()
-  && conflict.original.replace("\n", "").trim().is_empty() {
+    && conflict.original.replace("\n", "").trim().is_empty()
+  {
     return Ok(conflict.ours);
   }
 

@@ -1,9 +1,9 @@
-use difference::{Changeset};
+use difference::Changeset;
 
 struct Conflict<'a> {
   original: &'a str,
   ours: &'a str,
-  theirs: &'a str
+  theirs: &'a str,
 }
 
 pub fn prompt_conflicts_in_file(input: &str) -> String {
@@ -13,7 +13,7 @@ pub fn prompt_conflicts_in_file(input: &str) -> String {
   let original_end = "=======";
   let original_start_length = original_start.len();
   let original_end_length = original_end.len();
-  
+
   let mut output: Vec<String> = Vec::new();
 
   let chunks: Vec<&str> = input
@@ -34,15 +34,14 @@ pub fn prompt_conflicts_in_file(input: &str) -> String {
 
     let conflict = Conflict {
       ours: &chunk[0..original_start_index],
-      original: &chunk[original_start_index+original_start_length..original_end_index],
-      theirs: &chunk[original_end_index+original_end_length..]
+      original: &chunk[original_start_index + original_start_length..original_end_index],
+      theirs: &chunk[original_end_index + original_end_length..],
     };
 
     let result = prompt_conflict(conflict);
     output.push(String::from(result));
-    
   }
-  
+
   output.join("")
 }
 

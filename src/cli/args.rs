@@ -6,10 +6,10 @@ pub struct Args {
   pub output: String,
 
   pub text_editor: Option<String>,
-  
+
   pub clean: bool,
   pub json: bool,
-  pub ignored: Vec<String>
+  pub ignored: Vec<String>,
 }
 
 pub fn get_args_match() -> Args {
@@ -93,14 +93,27 @@ pub fn get_args_match() -> Args {
     )
     .get_matches();
 
-    Args {
-      source: matches.value_of("source").expect("could not get the source path").to_string(),
-      input: matches.value_of("input").expect("could not get the input path").to_string(),
-      output: matches.value_of("output").expect("could not get output path").to_string(),
+  Args {
+    source: matches
+      .value_of("source")
+      .expect("could not get the source path")
+      .to_string(),
+    input: matches
+      .value_of("input")
+      .expect("could not get the input path")
+      .to_string(),
+    output: matches
+      .value_of("output")
+      .expect("could not get output path")
+      .to_string(),
 
-      text_editor: matches.value_of("texteditor").map(|s| s.to_string()),
-      clean: matches.occurrences_of("clean") > 0,
-      json: matches.occurrences_of("json") > 0,
-      ignored: matches.values_of("exclude").unwrap_or_default().map(|s| s.to_string()).collect()
-    }
+    text_editor: matches.value_of("texteditor").map(|s| s.to_string()),
+    clean: matches.occurrences_of("clean") > 0,
+    json: matches.occurrences_of("json") > 0,
+    ignored: matches
+      .values_of("exclude")
+      .unwrap_or_default()
+      .map(|s| s.to_string())
+      .collect(),
+  }
 }

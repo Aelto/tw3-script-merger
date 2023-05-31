@@ -1,11 +1,11 @@
-use std::{ffi::OsStr, fs, str::FromStr};
-use std::path::{PathBuf};
 use std::error::Error;
+use std::path::PathBuf;
+use std::{ffi::OsStr, fs, str::FromStr};
 
-mod resolver;
-mod conflict;
 mod cli;
+mod conflict;
 mod merge;
+mod resolver;
 
 fn main() -> Result<(), Box<dyn Error>> {
   let args = cli::args::get_args_match();
@@ -28,21 +28,27 @@ fn main() -> Result<(), Box<dyn Error>> {
 
   for mod_result in mods.flatten() {
     // if let Ok(mod_name) = mod_result {
-      let mod_path = mod_result.path();
+    let mod_path = mod_result.path();
 
-      let mod_name = mod_path.file_name().unwrap().to_str().unwrap();
-      let is_ignored = args.ignored.iter().any(|name| mod_name == name);
-      if is_ignored {
-        println!("{:?} ignored", mod_name);
+    let mod_name = mod_path.file_name().unwrap().to_str().unwrap();
+    let is_ignored = args.ignored.iter().any(|name| mod_name == name);
+    if is_ignored {
+      println!("{:?} ignored", mod_name);
 
-        continue;
-      }
+      continue;
+    }
 
-      if !mod_path.file_name().unwrap_or_else(|| OsStr::new("")).to_str().unwrap_or("").starts_with("mod") {
-        continue;
-      }
+    if !mod_path
+      .file_name()
+      .unwrap_or_else(|| OsStr::new(""))
+      .to_str()
+      .unwrap_or("")
+      .starts_with("mod")
+    {
+      continue;
+    }
 
-      merge::merge_mod(&origin_path, &output_path, &mod_path)?;
+    merge::merge_mod(&origin_path, &output_path, &mod_path)?;
     // }
   }
 
@@ -54,4 +60,3 @@ fn main() -> Result<(), Box<dyn Error>> {
 
   Ok(())
 }
-
